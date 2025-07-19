@@ -1,0 +1,73 @@
+# app/main_step2.py - Test database and models
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Test imports
+results = {}
+
+try:
+    from app.core.config import settings
+    results["config"] = "✓"
+    logger.info("✓ Config imported successfully")
+except Exception as e:
+    results["config"] = f"✗ {str(e)}"
+    logger.error(f"✗ Config import failed: {e}")
+
+try:
+    from app.models.database import Base, get_db
+    results["database"] = "✓"
+    logger.info("✓ Database imported successfully")
+except Exception as e:
+    results["database"] = f"✗ {str(e)}"
+    logger.error(f"✗ Database import failed: {e}")
+
+try:
+    from app.models.schemas import TokenResponse
+    results["schemas"] = "✓"
+    logger.info("✓ Schemas imported successfully")
+except Exception as e:
+    results["schemas"] = f"✗ {str(e)}"
+    logger.error(f"✗ Schemas import failed: {e}")
+
+try:
+    from app.models.tiktok_models import TikTokShop
+    results["models"] = "✓"
+    logger.info("✓ Models imported successfully")
+except Exception as e:
+    results["models"] = f"✗ {str(e)}"
+    logger.error(f"✗ Models import failed: {e}")
+
+# Create FastAPI app
+app = FastAPI(
+    title="TikTok Shop Integration Service - Step 2",
+    version="1.0.0"
+)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/")
+async def root():
+    return {
+        "status": "running",
+        "step": "2 - Testing database and models",
+        "imports": results
+    }
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
