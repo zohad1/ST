@@ -1,0 +1,22 @@
+# Dockerfile.dev for Next.js Frontend (Development)
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install pnpm globally
+RUN npm install -g pnpm@8
+
+# Copy package files first
+COPY package.json ./
+COPY pnpm-lock.yaml* ./
+
+# Install dependencies without frozen lockfile for development
+# This prevents lockfile mismatch errors during development
+RUN pnpm install --no-frozen-lockfile
+
+# Expose port
+EXPOSE 3000
+
+# Development server with hot reload
+CMD ["pnpm", "dev"]
